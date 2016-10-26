@@ -1,0 +1,462 @@
+<!doctype html>
+<head>
+
+  <title>Musk 2 Mars</title>
+
+  <meta charset="utf-8">
+  <meta name="author" content="sidthekid">
+  <meta property="og:title" content="Musk 2 Mars - Help Elon Musk Reach Mars">
+  <link rel="icon" type="image/png" href="public/images/favicon.png" sizes="32x32" />
+
+  <script type="text/javascript" src="public/js/pixi.min.js"></script>
+  <script type="text/javascript" src="public/js/bump.js"></script>
+  <script type="text/javascript" src="public/js/simple-popup.min.js"></script>
+
+  <link rel="stylesheet" href="public/css/style.css" type="text/css" />
+
+</head>
+
+<body>
+
+<div class="footer">
+  <p>Made with &hearts; and PixiJS in Bangalore</p>
+</div>
+
+<div id="popup" class="popup-wrapper hide">
+  <div class="popup-content">
+    <div class="popup-title">
+      <button type="button" class="popup-close">&times;</button>
+      <h3 id="alertTitle">Musk2Mars</h3>
+    </div>
+    <div class="popup-body">
+      <p id="alertText">Help Elon reach Mars by navigating through the maze of physical and mental obstacles! Press ENTER to begin</p>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+//////////////////////////////
+///// globals
+//////////////////////////////
+var d = new Date()
+var musk, muskHit, space, mars, earth, enemies = [], reason = '', renderer, stage, state, gameStarted, TextureCache, resources, b, timerMonth, timerYear, timerCounter, timerMonthCounter = d.getMonth(), popupVisible = true
+var SPEED = Math.ceil(screen.height/screen.width * 4)
+var divisionFactor = Math.ceil(screen.height/screen.width * 6)
+var numberOfBlobs = Math.ceil(screen.height/screen.width * 90)
+
+//////////////////////////////
+///// setup PIXI
+//////////////////////////////
+renderer = PIXI.autoDetectRenderer(256, 256)
+document.body.appendChild(renderer.view)
+stage = new PIXI.Container()
+renderer.view.style.position = "absolute"
+renderer.view.style.display = "block"
+renderer.autoResize = true
+renderer.resize(window.innerWidth, window.innerHeight)
+TextureCache = PIXI.utils.TextureCache
+resources = PIXI.loader.resources
+b = new Bump(PIXI)
+
+
+//////////////////////////////
+///// setup assets
+//////////////////////////////
+PIXI.loader
+  .add("public/images/images.json")
+  .add("public/images/sprites.json")
+  .load(setup);
+
+function setup() {
+
+  // background
+  space = new PIXI.Sprite(TextureCache['space.png'])
+  space.scale.set(screen.width/space.width, screen.height/space.height)
+  stage.addChild(space);
+
+  // mars
+  mars = new PIXI.Sprite(TextureCache['mars.svg'])
+  mars.position.set(screen.width-100, screen.height/randomInt(2,5))
+  mars.radius = mars.width/2
+  mars.vy = 1
+  stage.addChild(mars)
+
+  // earth
+  earth = new PIXI.Sprite(TextureCache['earth.png'])
+  earth.anchor.set(0.5, 0.5)
+  earth.scale.set(0.5, 0.5)
+  earth.position.set(-1*earth.width/4, screen.height/2)
+  stage.addChild(earth)
+
+  // timer
+  timerMonth = new PIXI.Text(
+    monthNames[timerMonthCounter],
+    {fontFamily : 'Arial', fontSize: 100, fill : 0xffffff, align : 'center'}
+  )
+  timerMonth.anchor.set(0.5, 0.5)
+  timerMonth.position.set(screen.width/2.5, screen.height/2 - 100)
+  timerMonth.alpha = 0.5
+  stage.addChild(timerMonth)
+
+  timerYear = new PIXI.Text(
+    d.getFullYear(),
+    {fontFamily : 'Arial', fontSize: 100, fill : 0xffffff, align : 'center'}
+  )
+  timerYear.anchor.set(0.5, 0.5)
+  timerYear.position.set(screen.width/1.5, screen.height/2 - 100)
+  timerYear.alpha = 0.5
+  stage.addChild(timerYear)
+
+  // musk
+  musk = new PIXI.Sprite(TextureCache['musk.png'])
+  musk.anchor.set(0.5, 0.5)
+  musk.position.set((earth.width/4), screen.height/2)
+  musk.vx = 0, musk.vy = 0
+  musk.radius = 16
+  stage.addChild(musk)
+
+  // enemies
+  initEnemies()
+
+  renderer.render(stage)
+
+  //////////////////////////////
+  ///// start the game!
+  //////////////////////////////
+  timerCounter = 0
+  gameLoop();
+}
+
+
+//////////////////////////////
+///// setup user input
+//////////////////////////////
+var left = keyboard(37)
+var up = keyboard(38)
+var right = keyboard(39)
+var down = keyboard(40)
+var enter = keyboard(13)
+
+left.press = function() {
+  musk.vx = -1*SPEED
+  musk.vy = 0
+}
+
+left.release = function() {
+  // if the left arrow has been released, and the right arrow isn't down,
+  // and the musk isn't moving vertically:
+  // Stop the musk
+  if (!right.isDown) {
+    musk.vx = 0
+  }
+}
+
+up.press = function() {
+  musk.vy = -1*SPEED
+}
+
+up.release = function() {
+  if (!down.isDown) {
+    musk.vy = 0
+  }
+}
+
+right.press = function() {
+  musk.vx = SPEED
+}
+
+right.release = function() {
+  if (!left.isDown) {
+    musk.vx = 0
+  }
+}
+
+down.press = function() {
+  musk.vy = SPEED
+}
+
+down.release = function() {
+  if (!up.isDown) {
+    musk.vy = 0
+  }
+}
+
+enter.press = function() {
+  console.log('enter called!')
+  popupVisible = false
+  popup.close()
+}
+
+enter.release = function() {
+}
+
+var keys = [left, up, right, down, enter]
+
+
+//////////////////////////////
+///// setup game loop
+//////////////////////////////
+function state() {
+  if (popupVisible) return
+  if (!gameStarted) return
+
+  // use velocity for moving
+  musk.x += musk.vx
+  musk.y += musk.vy
+
+  timerCounter += 1
+  if (timerCounter%divisionFactor == 0) {
+    timerCounter = 0
+    timerMonthCounter++
+    if (timerMonthCounter%11 == 0) {
+      timerMonthCounter = 0
+      timerYear.text = (parseInt(timerYear.text) + 1).toString()
+    }
+    timerMonth.text = monthNames[timerMonthCounter]
+  }
+  
+  // keep musk from going to outer space
+  var inside = contain(musk, {x: 0, y: 0, width: screen.width, height: screen.height})
+  if (inside === "top" || inside === "bottom") {
+    musk.vy += -1*musk.vy
+  } else if (inside === "left" || inside === "right") {
+    musk.vx += -1*musk.vx
+  }
+
+  // check if musk reached mars
+  if (b.hitTestCircle(musk, mars)) {
+    popupVisible = true
+    document.getElementById('alertTitle').innerHTML = 'Congratulations!'
+    document.getElementById('alertText').innerHTML = 'You helped Elon reach Mars by ' + timerMonth.text + ' ' + timerYear.text + '!'
+    popup.open()
+    resetGame()
+    return
+  }
+
+  // check if musk hit an enemy
+  muskHit = false
+  enemies.forEach(function(enemy) {
+
+    // move along enemy
+    enemy.enemy.y += enemy.enemy.vy
+    enemy.enemy.x += enemy.enemy.vx
+
+    // randomize enemy speeds
+    if (Math.random() > 0.4) {
+      var factor = (Math.random() > 0.5)? 0.15 : 0.25
+      if (musk.x > screen.width/2 + 50)
+        factor += 0.1
+      enemy.enemy.vx += (Math.random() > 0.5)? -1*factor : factor
+    }
+    if (enemy.enemy.vx > 10)
+      enemy.enemy.vx = 1
+    else if (enemy.enemy.vx < -10)
+      enemy.enemy.vx = -1
+
+    // check the blob's screen boundaries
+    var blobHitsWall = contain(enemy.enemy, {x: 0, y: 0, width: screen.width, height: screen.height})
+    if (blobHitsWall === "top" || blobHitsWall === "bottom") {
+      enemy.enemy.vy *= -1
+    } else if (blobHitsWall === "right" || blobHitsWall === "left") {
+      enemy.enemy.vx *= -1
+    }
+
+    if(b.hitTestCircle(musk, enemy.enemy)) {
+      muskHit = true
+      reason = enemy.text
+    }
+  })
+
+  if (muskHit) {
+    popupVisible = true
+    document.getElementById('alertTitle').innerHTML = 'Oh no!'
+    document.getElementById('alertText').innerHTML = reason
+    popup.open()
+    resetGame()
+    return
+  }
+
+  // move mars along
+  mars.y += mars.vy
+  if (contain(mars, {x: 0, y: 0, width: screen.width + 1000, height: screen.height})) {
+    mars.vy *= -1
+  }
+}
+
+function gameLoop() {
+  // 60 fps
+  requestAnimationFrame(gameLoop);
+  state()
+  renderer.render(stage);
+}
+
+function resetGame() {
+  // reset to starting state
+  keys.forEach(function(key) {
+    key.isDown = false
+    key.isUp = true
+  })
+  timerCounter = 0
+  timerMonthCounter = d.getMonth()
+  timerMonth.text = monthNames[timerMonthCounter]
+  timerYear.text = d.getFullYear()
+  gameStarted = false
+  muskHit = false
+  musk.vx = 0
+  musk.vy = 0
+  musk.position.set((earth.width/4), screen.height/2)
+  mars.position.set(screen.width-100, screen.height/randomInt(2,5))
+
+  initEnemies()
+}
+
+function initEnemies() {
+  enemies.forEach(function(enemy) {
+    stage.removeChild(enemy.enemy)
+  })
+
+  enemies = []
+
+  var mapping = [
+    {text: "Hit by a self-driving car.", sprite: 'selfdrivingcar.png'},
+    {text: "Eliminated by rogue AI.", sprite: 'ai.png'},
+    {text: "Assassinated by NASA.", sprite: 'nasa.png'},
+    {text: "Quit in shame when the latest press release got less than 500 comments on HN.", sprite: 'hn.png'},
+    {text: "Stabbed by Robert Downey Junior for being cooler than him.", sprite: 'ironman.png'},
+    {text: "Jailed for stabbing Matt Damon because he claimed to be the first Martian.", sprite: 'marrdamon.png'},
+    {text: "Lost wrestling match against Jeff Bezos.", sprite: 'bezos.png'}
+  ], index = 0
+
+  for (var i = 0 ; i < numberOfBlobs ; i++) {
+    
+    var spriteName = mapping[index]['sprite']
+    var enemy = new PIXI.Sprite(TextureCache[spriteName])
+    
+    enemy.x = 100 + randomInt(10, 30) * i + randomInt(5, 10)
+    enemy.y = randomInt(0, screen.height - enemy.height)
+
+    enemy.vy = 1 * ((Math.random() > 0.5)? -1 : 1)
+    enemy.vx = 0.3 * ((Math.random() > 0.5)? -1 : 1)
+
+    enemy.radius = 16
+    
+    enemies.push({enemy: enemy, text: mapping[index]['text']})
+    index = (index+1)%mapping.length
+
+    stage.addChild(enemy)
+  }
+  
+}
+
+//////////////////////////////
+///// utility functions
+//////////////////////////////
+
+function contain(sprite, container) {
+
+  var collision = undefined;
+
+  //Left
+  if (sprite.x < container.x) {
+    sprite.x = container.x;
+    collision = "left";
+  }
+
+  //Top
+  if (sprite.y < container.y) {
+    sprite.y = container.y;
+    collision = "top";
+  }
+
+  //Right
+  if (sprite.x + sprite.width > container.width) {
+    sprite.x = container.width - sprite.width;
+    collision = "right";
+  }
+
+  //Bottom
+  if (sprite.y + sprite.height > container.height) {
+    sprite.y = container.height - sprite.height;
+    collision = "bottom";
+  }
+
+  //Return the collision value
+  return collision;
+}
+
+function keyboard(keyCode) {
+  var key = {};
+  key.code = keyCode;
+  key.isDown = false;
+  key.isUp = true;
+  key.press = undefined;
+  key.release = undefined;
+  //The `downHandler`
+  key.downHandler = function(event) {
+    if (event.keyCode === key.code) {
+      if (popupVisible && event.keyCode != 13) return
+      if (key.isUp && key.press) key.press()
+      if (event.keyCode == 13) return
+      if (!gameStarted) gameStarted = true
+      key.isDown = true;
+      key.isUp = false;
+    }
+    event.preventDefault();
+  };
+
+  //The `upHandler`
+  key.upHandler = function(event) {
+    if (event.keyCode === key.code) {
+      if (popupVisible && event.keyCode != 13) return
+      if (key.isDown && key.release) key.release()
+      if (event.keyCode == 13) return
+      key.isDown = false;
+      key.isUp = true;
+    }
+    event.preventDefault();
+  };
+
+  //Attach event listeners
+  window.addEventListener(
+    "keydown", key.downHandler.bind(key), false
+  );
+  window.addEventListener(
+    "keyup", key.upHandler.bind(key), false
+  );
+  return key;
+}
+
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+var monthNames = [
+  "January", 
+  "February", 
+  "March", 
+  "April", 
+  "May", 
+  "June", 
+  "July", 
+  "August", 
+  "September", 
+  "October", 
+  "November", 
+  "December"
+]
+
+//////////////////////////////
+///// setup popup
+//////////////////////////////
+
+var popup = new Popup( document.getElementById('popup'), {
+  width: 600,
+  height: 150
+})
+popup.close()
+popup.open()
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+{"frames": {
+
+"earth.png":
+{
+	"frame": {"x":0,"y":0,"w":600,"h":600},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":600,"h":600},
+	"sourceSize": {"w":600,"h":600},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"enemy.png":
+{
+	"frame": {"x":600,"y":0,"w":32,"h":24},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":24},
+	"sourceSize": {"w":32,"h":24},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"mars.svg":
+{
+	"frame": {"x":632,"y":0,"w":337,"h":338},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":337,"h":338},
+	"sourceSize": {"w":337,"h":338},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"musk.png":
+{
+	"frame": {"x":0,"y":600,"w":33,"h":43},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":33,"h":43},
+	"sourceSize": {"w":33,"h":43},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"space.png":
+{
+	"frame": {"x":33,"y":600,"w":900,"h":900},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":900,"h":900},
+	"sourceSize": {"w":900,"h":900},
+	"pivot": {"x":0.5,"y":0.5}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "images.png",
+	"format": "RGBA8888",
+	"size": {"w":969,"h":1500},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:fd0d04d3aefe476bc5a44e7a0d59493f:dcf53b01ce04c26c933fdb27b7055b73:9be8c185d95a5be4a06ec0067a3d8380$"
+}
+}
