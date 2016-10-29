@@ -20,7 +20,7 @@
 },
 "hn.png":
 {
-	"frame": {"x":64,"y":0,"w":32,"h":32},
+	"frame": {"x":0,"y":32,"w":32,"h":32},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
@@ -29,7 +29,7 @@
 },
 "ironman.png":
 {
-	"frame": {"x":96,"y":0,"w":32,"h":32},
+	"frame": {"x":32,"y":32,"w":32,"h":32},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
@@ -38,7 +38,7 @@
 },
 "marrdamon.png":
 {
-	"frame": {"x":128,"y":0,"w":32,"h":32},
+	"frame": {"x":0,"y":64,"w":32,"h":32},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
@@ -47,7 +47,7 @@
 },
 "nasa.png":
 {
-	"frame": {"x":160,"y":0,"w":32,"h":33},
+	"frame": {"x":32,"y":64,"w":32,"h":33},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":33},
@@ -56,11 +56,20 @@
 },
 "selfdrivingcar.png":
 {
-	"frame": {"x":192,"y":0,"w":34,"h":34},
+	"frame": {"x":0,"y":97,"w":34,"h":34},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":34},
 	"sourceSize": {"w":34,"h":34},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"ula.png":
+{
+	"frame": {"x":0,"y":131,"w":32,"h":32},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+	"sourceSize": {"w":32,"h":32},
 	"pivot": {"x":0.5,"y":0.5}
 }},
 "meta": {
@@ -68,8 +77,8 @@
 	"version": "1.0",
 	"image": "sprites.png",
 	"format": "RGBA8888",
-	"size": {"w":226,"h":34},
+	"size": {"w":64,"h":163},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:a7cbeeca87bac26bc4db0888b0d5fe49:762b471c77bb6ee6e1348321fb66b900:1eabdf11f75e3a4fe3147baf7b5be24b$"
+	"smartupdate": "$TexturePacker:SmartUpdate:49c927e03fd3ebec1667abcdd37425f9:f5539a3a4641345c30574a6ae2e35d08:1eabdf11f75e3a4fe3147baf7b5be24b$"
 }
 }
