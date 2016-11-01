@@ -170,14 +170,10 @@ function setup() {
 ///// setup user input
 //////////////////////////////
 var left = keyboard(37, 65)
-//        || keyboard(65)
 var up = keyboard(38, 87)
-//var wkey = keyboard(87)
 var right = keyboard(39, 68)
-//var dkey = keyboard(68)
 var down = keyboard(40, 83)
-//var skey = keyboard(83)
-var enter = keyboard(13)
+var enter = keyboard(13, 13)
 
 left.press = function() {
   musk.vx = -1*SPEED
