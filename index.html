@@ -169,10 +169,14 @@ function setup() {
 //////////////////////////////
 ///// setup user input
 //////////////////////////////
-var left = keyboard(37)
-var up = keyboard(38)
-var right = keyboard(39)
-var down = keyboard(40)
+var left = keyboard(37, 65)
+//        || keyboard(65)
+var up = keyboard(38, 87)
+//var wkey = keyboard(87)
+var right = keyboard(39, 68)
+//var dkey = keyboard(68)
+var down = keyboard(40, 83)
+//var skey = keyboard(83)
 var enter = keyboard(13)
 
 left.press = function() {
@@ -361,7 +365,8 @@ function initEnemies() {
     {text: "Stabbed by Robert Downey Junior for being cooler than him.", sprite: 'ironman.png'},
     {text: "Jailed for stabbing Matt Damon because he claimed to be the first Martian.", sprite: 'marrdamon.png'},
     {text: "Lost wrestling match against Jeff Bezos.", sprite: 'bezos.png'},
-    {text: "Regulated by space consortium to only go till Moon.", sprite: 'ula.png'}
+    {text: "Regulated by space consortium to only go till Moon.", sprite: 'ula.png'},
+    {text: "Attacked by a mob for claiming that Harambe was just a Gorrila. #DOFH", sprite: 'harambe.png'}
   ], index = 0
 
   for (var i = 0 ; i < numberOfBlobs ; i++) {
@@ -432,16 +437,17 @@ function contain(sprite, container) {
   return collision;
 }
 
-function keyboard(keyCode) {
+function keyboard(keyCode, altKey) {
   var key = {};
   key.code = keyCode;
+  key.altcode = altKey;
   key.isDown = false;
   key.isUp = true;
   key.press = undefined;
   key.release = undefined;
   //The `downHandler`
   key.downHandler = function(event) {
-    if (event.keyCode === key.code) {
+    if (event.keyCode === key.code || event.keyCode === key.altcode) {
       if (popupVisible && event.keyCode != 13) return
       if (key.isUp && key.press) key.press()
       if (event.keyCode == 13) return
@@ -454,7 +460,7 @@ function keyboard(keyCode) {
 
   //The `upHandler`
   key.upHandler = function(event) {
-    if (event.keyCode === key.code) {
+    if (event.keyCode === key.code || event.keyCode === key.altcode) {
       if (popupVisible && event.keyCode != 13) return
       if (key.isDown && key.release) key.release()
       if (event.keyCode == 13) return
