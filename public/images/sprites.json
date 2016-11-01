@@ -63,6 +63,15 @@
 	"sourceSize": {"w":34,"h":34},
 	"pivot": {"x":0.5,"y":0.5}
 },
+"harambe.png":
+{
+	"frame": {"x":32,"y":97,"w":32,"h":32},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":34},
+	"sourceSize": {"w":34,"h":34},
+	"pivot": {"x":0.5,"y":0.5}
+},
 "ula.png":
 {
 	"frame": {"x":0,"y":131,"w":32,"h":32},
